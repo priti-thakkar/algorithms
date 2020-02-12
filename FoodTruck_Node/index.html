@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+ 
+<head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script>
+	function fetchData(pageNumber){
+		$.ajax({url: "/foodTrucks?page="+pageNumber, success: function(result){
+			
+			try{
+				let parsedResult = JSON.parse(result);
+				if(parsedResult.length ==0 ) 
+					return false;
+				let header = "<tr><td>Name</td><td>Address</td><td>Hours</td></tr>";
+				
+				let resSet="";
+				parsedResult.forEach(function(data){
+					resSet+= "<tr><td>"+data['applicant']+"</td><td>" + data['location'] + "</td><td>" + data['starttime'] + " - "+ data['endtime'] + "</td></tr>";					
+				});
+				
+				$("#div1").html("<table>"+header+resSet+"</table>");
+				document.getElementById("curPage").value = pageNumber;
+			}catch(err){
+				$("#div1").html("<b>Invalid Data!!</b>");
+			}		  
+		},error : function(result){
+			$("#div1").html("<table>"+result+"</table>");
+		}});
+	  }
+	$(document).ready(fetchData(0));
+	
+	function goPrev(){
+		
+		 let curPage= parseInt($("#curPage").val()) -1;
+		 if(curPage < 0 )
+			return false;
+		 fetchData(curPage);
+	}	
+	
+	function goNext(){
+		let curPage= parseInt($("#curPage").val())+1;
+		fetchData(curPage);
+	}
+	</script>
+
+</head>
+ 
+<body>
+    <h1>FoodTrucks</h1>
+	<div id="div1"></div>
+	<input type="hidden" id="curPage" value="0" />
+	<div id="paginate"><span onclick="goPrev()" style="mouse:pointer"> Prev </span> | <span onclick="goNext()" style="{mouse:pointer}"> Next </span> </div>
+</body>
+ 
+</html>
